@@ -30,7 +30,7 @@
 
 let
   metadata = lib.importJSON ../package.json;
-  tchapWebMeta = 
+  tchapWebMeta =
   let
     config = metadata.tchapConfig.prod;
   in {
@@ -38,13 +38,13 @@ let
     archiveName = config.tchap-web_archive_name;
     repo = config.tchap-web_github.repo;
   };
-  
+
   # Télécharger l'archive tchap-web de manière pure
   tchapWebArchive = fetchurl {
     url = "${tchapWebMeta.repo}/releases/download/tchap-${tchapWebMeta.version}/${tchapWebMeta.archiveName}";
     hash = "sha256-rp1CoJyJC0faSe/QkfxGHeFGMP8GO0pGIs1cdtEUPaE="; # À remplir après la première tentative
   };
-  
+
 in
 rustPlatform.buildRustPackage rec {
   pname = "tchap-desktop";
@@ -79,7 +79,7 @@ rustPlatform.buildRustPackage rec {
       .plugins.updater = {"active": false, "pubkey": "", "endpoints": []}
     ' \
     src-tauri/tauri.conf.json | sponge src-tauri/tauri.conf.json
-  '' 
+  ''
   # NOTE: libayatana should use pkg-config…
     + lib.optionalString stdenv.hostPlatform.isLinux ''
     substituteInPlace $cargoDepsCopy/source-registry-0/libappindicator-sys-*/src/lib.rs \
@@ -88,10 +88,10 @@ rustPlatform.buildRustPackage rec {
 
   preConfigure = ''
     # Les dépendances npm sont déjà installées par npmConfigHook
-    
+
     # "Télécharger" l'archive (en fait déjà présente)
     npm run fetch-package -- prod || true
-    
+
     # Si le script a échoué, extraire manuellement l'archive
     if [ ! -d "src" ]; then
       mkdir -p src
@@ -158,7 +158,7 @@ rustPlatform.buildRustPackage rec {
     rm -f $out/share/applications/Tchap.desktop
     # Les icônes sont dans src-tauri/icons depuis la racine
     install -Dm644 src-tauri/icons/icon.png $out/share/icons/hicolor/128x128/apps/tchap.png
-    
+
     # Créer le fichier .desktop
     mkdir -p $out/share/applications
     cat > $out/share/applications/tchap.desktop <<EOF
